@@ -1,4 +1,3 @@
-# This is a sample Python script.
 from FormerBoard import FormerBoard
 import tkinter as tk
 
