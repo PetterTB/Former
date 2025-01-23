@@ -26,8 +26,19 @@ class FormerBoard:
         self.board = [[FormerBoard.EMPTY] * self.width] * self.height
         self.sectors = {}
 
-    def print_board(self):
+    def get_deep_copy(self):
+        res = FormerBoard()
+        res.board = [row[:] for row in self.board]
+        res.height = self.height
+        res.width = self.width
+        return res
 
+    def remove_sector(self, h, w):
+        size_of_sector = self.recursive_remove(h, w, self.board[h][w])
+        self.perform_fall()
+        return size_of_sector
+
+    def print_board(self):
         print("board is: ")
         for i in range(self.height):
             line = ""
@@ -56,7 +67,7 @@ class FormerBoard:
 
         for h in range(len(self.board)):
             for w in range(len(self.board[h])):
-                size = self.remove_sector(h, w, self.board[h][w])
+                size = self.recursive_remove(h, w, self.board[h][w])
                 if size > 0:
                     self.sectors[(h, w)] = size
 
@@ -75,7 +86,11 @@ class FormerBoard:
         else:
             return (h, w)
 
-    def remove_sector(self, h, w, symbol):
+    def recursive_remove(self, h, w, symbol):
+        """
+        Remove a sector of a given symbol from, at h,w from the board.
+        """
+
         if h < 0 or w < 0:
             return 0
         if h >= self.height or w >= self.width:
@@ -87,10 +102,10 @@ class FormerBoard:
             return 0
         if symbol_found == symbol:
             self.board[h][w] = FormerBoard.EMPTY
-            return (1 + self.remove_sector(h - 1, w, symbol) +
-                    self.remove_sector(h + 1, w, symbol) +
-                    self.remove_sector(h, w + 1, symbol) +
-                    self.remove_sector(h, w - 1, symbol))
+            return (1 + self.recursive_remove(h - 1, w, symbol) +
+                    self.recursive_remove(h + 1, w, symbol) +
+                    self.recursive_remove(h, w + 1, symbol) +
+                    self.recursive_remove(h, w - 1, symbol))
         return 0
 
     def perform_fall(self):
@@ -100,7 +115,8 @@ class FormerBoard:
             shape_fell = False
             for h in range(len(self.board) - 1):
                 for w in range(len(self.board[h])):
-                    if self.board[h][w] != FormerBoard.EMPTY and self.board[h + 1][w] == FormerBoard.EMPTY:
+                    if self.board[h][w] != FormerBoard.EMPTY and self.board[h +
+                                                                            1][w] == FormerBoard.EMPTY:
                         shape_fell = True
                         self.board[h + 1][w] = self.board[h][w]
                         self.board[h][w] = FormerBoard.EMPTY
