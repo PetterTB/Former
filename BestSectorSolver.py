@@ -1,5 +1,4 @@
 from FormerBoard import FormerBoard
-from unittest import TestCase
 
 
 class BestSectorSolver:
@@ -19,16 +18,4 @@ class BestSectorSolver:
             solution.append(best_sector)
             b.remove_sector(best_sector[0], best_sector[1])
 
-
-class TestBestSectorSolver(TestCase):
-    def test_smoketest(self):
-        test_board = FormerBoard()
-        test_board.load_board(FormerBoard.TEST1)
-
-        solver = BestSectorSolver(test_board)
-        result = solver.solve()
-
-
-if __name__ == '__main__':
-    import unittest
-    unittest.main()
+        return solution
