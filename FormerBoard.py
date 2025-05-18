@@ -1,5 +1,4 @@
 import random
-import tkinter as tk
 
 
 class FormerBoard:
@@ -34,8 +33,8 @@ class FormerBoard:
         return res
 
     def remove_sector(self, h, w):
-        size_of_sector = self.recursive_remove(h, w, self.board[h][w])
-        self.perform_fall()
+        size_of_sector = self._recursive_remove(h, w, self.board[h][w])
+        self._perform_fall()
         return size_of_sector
 
     def print_board(self):
@@ -57,8 +56,8 @@ class FormerBoard:
         self.width = len(board[0])
 
     def find_sectors(self):
-        """ OBSOBS: denne funksjonen gjør midlertidige endringer i self.board.
-                Jeg jobber jo kun single threaded..
+        """
+         OBSOBS: Endrer midlertidig self.board. Single thread only.
         """
 
         self.sectors = {}
@@ -67,7 +66,7 @@ class FormerBoard:
 
         for h in range(len(self.board)):
             for w in range(len(self.board[h])):
-                size = self.recursive_remove(h, w, self.board[h][w])
+                size = self._recursive_remove(h, w, self.board[h][w])
                 if size > 0:
                     self.sectors[(h, w)] = size
 
@@ -84,13 +83,9 @@ class FormerBoard:
         if self.board[h][w] == FormerBoard.EMPTY:
             return self.find_random_sector()
         else:
-            return (h, w)
+            return h, w
 
-    def recursive_remove(self, h, w, symbol):
-        """
-        Remove a sector of a given symbol from, at h,w from the board.
-        """
-
+    def _recursive_remove(self, h, w, symbol):
         if h < 0 or w < 0:
             return 0
         if h >= self.height or w >= self.width:
@@ -102,21 +97,21 @@ class FormerBoard:
             return 0
         if symbol_found == symbol:
             self.board[h][w] = FormerBoard.EMPTY
-            return (1 + self.recursive_remove(h - 1, w, symbol) +
-                    self.recursive_remove(h + 1, w, symbol) +
-                    self.recursive_remove(h, w + 1, symbol) +
-                    self.recursive_remove(h, w - 1, symbol))
+            return (1 + self._recursive_remove(h - 1, w, symbol) +
+                    self._recursive_remove(h + 1, w, symbol) +
+                    self._recursive_remove(h, w + 1, symbol) +
+                    self._recursive_remove(h, w - 1, symbol))
         return 0
 
-    def perform_fall(self):
-
+    def _perform_fall(self):
         shape_fell = True
         while shape_fell:
             shape_fell = False
             for h in range(len(self.board) - 1):
                 for w in range(len(self.board[h])):
-                    if self.board[h][w] != FormerBoard.EMPTY and self.board[h +
-                                                                            1][w] == FormerBoard.EMPTY:
+                    has_symbol = self.board[h][w] != FormerBoard.EMPTY
+                    below_empty = self.board[h + 1][w] == FormerBoard.EMPTY
+                    if has_symbol and below_empty:
                         shape_fell = True
                         self.board[h + 1][w] = self.board[h][w]
                         self.board[h][w] = FormerBoard.EMPTY

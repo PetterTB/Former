@@ -13,8 +13,11 @@ class TestFormerBoard(TestCase):
         size = b.remove_sector(1, 1)
         self.assertEqual(size, 4)
         self.assertFalse(b.is_empty())
-        b.perform_fall()
-        self.assertEqual([1, 1, 1], b.board[-1])
+
+        self.assertEqual([".", ".", 1], b.board[0])
+        self.assertEqual([".", ".", 1], b.board[1])
+        self.assertEqual([1, 1, 1], b.board[2])
+
 
     def test_get_sectors(self):
         b = FormerBoard()
